@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="description" content="黄嘉志的博客">
+    <meta name="keyword"  content="前端博客,web开发">
+
+    <title>
+        
+          判断js中的数据类型 - 进击的前端
+        
+    </title>
+
+    <link rel="canonical" href="http://jiazhi-wong.github.io/2016/08/06/判断js中的数据类型/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <!-- <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+
+    <!-- bug_ fixed by hjz -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">进击的前端</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://jiazhi-wong.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('railway.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Web开发" title="Web开发">Web开发</a>
+                        
+                          <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        
+                    </div>
+                    <h1>判断js中的数据类型</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Jiazhi on
+                        2016-08-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在我们编写js的代码中，要处理各种数据。ECMAScript中有5种简单数据类型（也称为基本数据类型）：<code>Undefined</code>、<code>Null</code>、<code>Boolean</code>、<code>Number</code>和<code>String</code>，还有1种复杂数据类型——<code>Object</code>。</p>
+<p>面对这6种数据类型，我们应该如何做出准确的判断呢？</p>
+<h2 id="typeof运算符"><a href="#typeof运算符" class="headerlink" title="typeof运算符"></a>typeof运算符</h2><p><code>typeof</code>可以解决大部分的数据类型判断，它是一个一元运算，放在一个运算值之前，其返回值为一个<strong>字符串</strong>。</p>
+<p>以下是各种数据类型返回结果：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> iStr = <span class="string">"JavaScript"</span>;</span><br><span class="line"><span class="keyword">typeof</span> iStr;    <span class="comment">// "string"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iNum = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">typeof</span> iNum;    <span class="comment">// "number"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iBool = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">typeof</span> iBool;   <span class="comment">// "boolean"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iNull = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">typeof</span> iNull;   <span class="comment">// "object"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iUndef = <span class="literal">undefined</span>;</span><br><span class="line"><span class="keyword">typeof</span> iUndef;  <span class="comment">// "undefined"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iObj = &#123;&#125;;</span><br><span class="line"><span class="keyword">typeof</span> iObj;    <span class="comment">// "object"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iArr = [];</span><br><span class="line"><span class="keyword">typeof</span> iArr;    <span class="comment">// "object"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iDate = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line"><span class="keyword">typeof</span> iDate;    <span class="comment">// "object"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iFunc = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"><span class="keyword">typeof</span> iFunc;   <span class="comment">// "function"</span></span><br></pre></td></tr></table></figure>
+<p>从中我们能够发现：</p>
+<ul>
+<li><code>null</code>、对象和数组都会返回<code>&quot;object&quot;</code></li>
+<li>可以使用<code>typeof</code>区分<code>null</code>和<code>undefined</code></li>
+<li>函数会返回<code>&quot;function&quot;</code></li>
+<li>暂时无法区分出对象和数组</li>
+</ul>
+<p>在IE8和更早版本的IE浏览器中，使用<code>typeof</code>来检测DOM节点（比如<code>document.getElementById()</code>）中的函数都返回<code>&quot;object&quot;</code>。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// IE8及以下</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="built_in">document</span>.getElementById;           <span class="comment">// "object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="built_in">document</span>.getElementsByTagName;     <span class="comment">// "object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="built_in">document</span>.createElement;            <span class="comment">// "object"</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="instanceof运算符"><a href="#instanceof运算符" class="headerlink" title="instanceof运算符"></a>instanceof运算符</h2><p><code>instanceof</code>运算符希望左操作数是一个对象，右操作数标识对象的类。如果左侧的对象是右侧类的实例，则表达式返回<code>true</code>，否则返回<code>false</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>();   <span class="comment">// 通过Date()创建一个新对象</span></span><br><span class="line">d <span class="keyword">instanceof</span> <span class="built_in">Date</span>;    <span class="comment">// true，d是由Date()创建的</span></span><br><span class="line">d <span class="keyword">instanceof</span> <span class="built_in">Object</span>;  <span class="comment">// true，所有的对象都是Object的实例</span></span><br><span class="line">d <span class="keyword">instanceof</span> <span class="built_in">Number</span>;  <span class="comment">// false，d不是一个Number对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];    <span class="comment">// 通过数组字面量新建一个数组</span></span><br><span class="line">a <span class="keyword">instanceof</span> <span class="built_in">Array</span>;   <span class="comment">// true，a是一个数组</span></span><br><span class="line">a <span class="keyword">instanceof</span> <span class="built_in">Object</span>;  <span class="comment">// true，所有的数组都是对象</span></span><br><span class="line">a <span class="keyword">instanceof</span> <span class="built_in">RegExp</span>;  <span class="comment">// false，数组不是正则表达式</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;&#125;       <span class="comment">// 创建一个函数</span></span><br><span class="line">f <span class="keyword">instanceof</span> <span class="built_in">Function</span>;<span class="comment">// true，所有的函数都是Function的实例</span></span><br></pre></td></tr></table></figure>
+<p>使用<code>instanceof</code>，我们可以区分出对象和数组。</p>
+<p><code>instanceof</code>是基于实例与类的关系来判断类型的，如果一个页面中有多个<code>&lt;iframe&gt;</code>，每个<code>&lt;iframe&gt;</code>下的<code>Object</code>、<code>Array</code>、<code>String</code>等基类都是不同的对象，所以<code>instanceof</code>不能跨<code>&lt;iframe&gt;</code>。</p>
+<h2 id="constructor属性"><a href="#constructor属性" class="headerlink" title="constructor属性"></a>constructor属性</h2><p><code>constructor</code>属性返回创建此对象的<strong>构造函数</strong>的引用。</p>
+<p>实际上，一个实例被构造函数创建出来后，其本身是没有<code>constructor</code>属性的，其找到的<code>constructor</code>属性其实是这个实例的原型（通过<code>__proto__</code>访问）下的一个属性。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">obj.hasOwnProperty(<span class="string">'constructor'</span>);              <span class="comment">// false</span></span><br><span class="line">obj.__proto__.hasOwnProperty(<span class="string">'constructor'</span>);    <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>所以我们可以想到<code>constructor</code>属性只能用于判断该实例的<strong>构造函数</strong>的引用，不能像<code>instanceof</code>那样判断该实例所有的类。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [];                 <span class="comment">// 新建一个名为arr的数组</span></span><br><span class="line"></span><br><span class="line">arr.constructor === <span class="built_in">Array</span>;    <span class="comment">// true，arr的构造函数是Array</span></span><br><span class="line">arr <span class="keyword">instanceof</span> <span class="built_in">Array</span>;         <span class="comment">// true，arr是Array的实例</span></span><br><span class="line"></span><br><span class="line">arr.constructor === <span class="built_in">Object</span>;   <span class="comment">// false，arr.__proto__.constructor不是Object</span></span><br><span class="line">arr <span class="keyword">instanceof</span> <span class="built_in">Object</span>;        <span class="comment">// true，所有数组都是Object的实例</span></span><br></pre></td></tr></table></figure>
+<p>不过该实例的原型对象下的<code>constructor</code>属性是不可靠的，一旦<code>constructor</code>属性被修改或者原型对象被重写，就会触发异常。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [];                          <span class="comment">// 新建一个名为arr的数组</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Array</span>.prototype.constructor = <span class="built_in">Object</span>;  <span class="comment">// 修改Array原型对象下constructor的指向</span></span><br><span class="line"></span><br><span class="line">arr.constructor === <span class="built_in">Array</span>;             <span class="comment">// false，arr原型对象下constructor的指向已经不是Array</span></span><br><span class="line">arr <span class="keyword">instanceof</span> <span class="built_in">Array</span>;                  <span class="comment">// true，arr是Array的实例</span></span><br><span class="line"></span><br><span class="line">arr.constructor === <span class="built_in">Object</span>;            <span class="comment">// true，arr.__proto__.constructor修改成了Object</span></span><br><span class="line">arr <span class="keyword">instanceof</span> <span class="built_in">Object</span>;                 <span class="comment">// true，所有数组都是Object的实例</span></span><br></pre></td></tr></table></figure>
+<p>通过上面的测试可以看出，就算<code>constructor</code>属性被修改了，<code>instanceof</code>的判断依然是可靠的。</p>
+<h2 id="Object-prototype-toString方法"><a href="#Object-prototype-toString方法" class="headerlink" title="Object.prototype.toString方法"></a>Object.prototype.toString方法</h2><p>最后介绍一种通用，而且又是最精确的方法。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 将该方法封装成一个函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">oToString</span>(<span class="params">o</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Object</span>.prototype.toString.call(o);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iStr = <span class="string">"JavaScript"</span>;</span><br><span class="line">oToString(iStr);              <span class="comment">// "[object String]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iNull = <span class="literal">null</span>;</span><br><span class="line">oToString(iNull);             <span class="comment">// "[object Null]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iUndef = <span class="literal">undefined</span>;</span><br><span class="line">oToString(iUndef);            <span class="comment">// "[object Undefined]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iObj = &#123;&#125;;</span><br><span class="line">oToString(iObj);              <span class="comment">// "[object Object]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iArr = [];</span><br><span class="line">oToString(iArr);              <span class="comment">// "[object Array]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iDate = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">oToString(iDate);              <span class="comment">// "[object Date]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iFunc = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line">oToString(iFunc);             <span class="comment">// "[object Function]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iHtml = <span class="built_in">document</span>.documentElement;</span><br><span class="line">oToString(iHtml);             <span class="comment">// "[object HTMLHtmlElement]"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iBody = <span class="built_in">document</span>.body;</span><br><span class="line">oToString(iBody);             <span class="comment">// "[object HTMLBodyElement]"</span></span><br></pre></td></tr></table></figure>
+<p>实际上，这个方法显示调用了<code>Object.toString()</code>，返回一个表示该对象的字符串。通过判断返回的字符串（大小写不能写错）就能知道是不是我们想要的数据类型。并且这种方法可以跨<code>&lt;iframe&gt;</code>，因为该方法与实例和类的关系无关。</p>
+<p>在IE8版本以下<code>null</code>和<code>undefined</code>的结果是<code>&quot;[object Object]&quot;</code>。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// IE8</span></span><br><span class="line"><span class="built_in">Object</span>.prototype.toString.call(<span class="literal">null</span>);         <span class="comment">// "[object Object]"</span></span><br><span class="line"><span class="built_in">Object</span>.prototype.toString.call(<span class="literal">undefined</span>);    <span class="comment">// "[object Object]"</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>介绍了四种判断数据类型的方法，最后我来做个比较总结：</p>
+<ul>
+<li><p><code>typeof</code></p>
+<ul>
+<li>优点<ul>
+<li>能判断大部分的数据类型</li>
+<li>运算符的速度快</li>
+<li>能判断<code>null</code>和<code>undefined</code></li>
+</ul>
+</li>
+<li>缺点<ul>
+<li><code>null</code>、对象和数组的返回结果都是<code>&quot;object&quot;</code></li>
+<li>无法进一步判断对象和数组</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>instanceof</code></p>
+<ul>
+<li>优点<ul>
+<li>能判断该实例所有的类，可靠</li>
+<li>运算符的速度快</li>
+<li>能进一步判断对象和数组</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>无法跨<code>&lt;iframe&gt;</code>判断</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>constructor</code></p>
+<ul>
+<li>优点<ul>
+<li>实际上是判断该实例原型下的<code>constructor</code>属性</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>如果原型下的<code>constructor</code>属性被修改，结果不可靠</li>
+<li>因为查找的是属性，所以比运算符的速度慢</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>Object.prototype.toString</code></p>
+<ul>
+<li>优点<ul>
+<li>实际上是显示调用Object.toString()</li>
+<li>通用，所有数据类型都可以精确区分</li>
+<li>能够跨<code>&lt;iframe&gt;</code>判断</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>因为调用的是方法，所以速度最慢</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><code>Object.prototype.toString</code>虽然通用，不过性能最差，我是只有在其他方法解决不了的情况下，才会选用它。以上方法需要根据需求，灵活使用，以求代码性能的最大化。</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/20/Web前端调试神器-Browsersync/" data-toggle="tooltip" data-placement="top" title="前端调试神器-Browsersync">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/07/28/移动开发实践总结/" data-toggle="tooltip" data-placement="top" title="移动开发实践小结">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Web开发" title="Web开发">Web开发</a>
+                        
+                          <a class="tag" href="/tags/#JavaScript" title="JavaScript">JavaScript</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("/js/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/huang-zhi-85-22">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Jiazhi-Wong">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chiachiwong">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    <a href="http://www.miitbeian.gov.cn/" target="_blank">粤ICP备17127033号</a> | Copyright &copy; 进击的前端 2017 
+                    <br>
+                    Ported by <a href="http://jiazhi-wong.github.io">Jiazhi</a> |
+                    Theme by
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("/js/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+        // 拿到文章post-container容器中所有子元素组成的类数组
+        var container = document.getElementsByClassName('post-container')[0];
+        var conChilds =  Array.prototype.slice.call(container.children);
+
+        // 使用Array的filter迭代方法筛选元素
+        var headEle = conChilds.filter(function(item, index, array) {
+            var pattern = /^h[1-6]$/i;
+            var tagName = item.tagName;
+            var pos = tagName.search(pattern);
+
+            if (pos === 0) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+
+        // 提取出标签名字的数字部分和id，分别按顺序保存在headNum和headId数组中
+        var headNum = new Array();
+        var headId = new Array();
+        for (var i=0, len=headEle.length; i<len; i++) {
+            var match = headEle[i].tagName.match(/\d+$/i);
+            headNum[i] = match[0].toLowerCase();
+            headId[i] = headEle[i].id;
+        }
+
+        // 在选择器目标元素中，创建catelog结构
+        function createCatelog(selector) {
+            var catelog = document.querySelectorAll(selector)[0];
+            var fragment = document.createDocumentFragment();
+            var ul = document.createElement("ul");
+            ul.className = "catalog-body";
+            var curNode;
+            for (var i=0, len=headNum.length; i<len; i++) {
+                if (i === 0) {
+                    // 将第一个li加入到ul中
+                    var li = document.createElement("li");
+                    li.className = headEle[i].tagName + '_nav';
+                    var a = '<a href="#' + headEle[i].id + '" rel="nofollow">' + headEle[i].textContent + '</a>';
+                    li.innerHTML = a;
+                    ul.appendChild(li);
+                    curNode = ul.children[i];
+                } else {
+                    var c = headNum[i] - headNum[i-1];  // c可能出现的值有1(子标题),0(同级标题),负整数(祖先的同级标题)
+                    if (c === 1) {
+                        // 判断当前标题是不是前一个标题的子标题，如果大于，例如"h2">"h1"
+                        // 则在前一个li中创建一个新的ul，并且在这个ul中，新增一个li
+                        var subUl = document.createElement("ul");
+                        var li = document.createElement("li");
+                        li.className = headEle[i].tagName + '_nav';
+                        var a = '<a href="#' + headEle[i].id + '" rel="nofollow">' + headEle[i].textContent + '</a>';
+                        li.innerHTML = a;
+                        subUl.appendChild(li);
+                        curNode.appendChild(subUl);
+                        curNode = li;
+                    } else if (c <= 0) {
+                        var curParent = curNode.parentElement;
+                        for (var j = 0; j < -c; j++) {
+                            curParent = curParent.parentElement.parentElement;
+                        }
+                        var li = document.createElement("li");
+                        li.className = headEle[i].tagName + '_nav';
+                        var a = '<a href="#' + headEle[i].id + '" rel="nofollow">' + headEle[i].textContent + '</a>';
+                        li.innerHTML = a;
+                        curParent.appendChild(li);
+                        curNode = li;
+                    }
+                }
+            }
+
+            // 将片段加入catelog中
+            fragment.appendChild(ul);
+            catelog.appendChild(fragment);
+        }
+
+        createCatelog(selector);
+    }
+
+    generateCatalog(".side-catalog");
+
+    // 下面是原来的代码
+//    function generateCatalog (selector) {
+//        var P = $('div.post-container'),a,n,t,l,i,c;
+//        a = P.find('h1,h2,h3,h4,h5,h6');
+//        a.each(function () {
+//            n = $(this).prop('tagName').toLowerCase();
+//            i = "#"+$(this).prop('id');
+//            t = $(this).text();
+//            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+//            l = $('<li class="'+n+'_nav"></li>').append(c);
+//            $(selector).append(l);
+//        });
+//        return true;
+//    }
+//
+//    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold");
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+
+</script>
+
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- <img src="http://jiazhi-wong.github.io/img/icon_wechat.png" width="0" height="0" /> -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
